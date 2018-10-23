@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Sign up</h2>
+ 			<form action="" method="post" enctype="multipart/form-data" id="form">
+                {% csrf_token %}
+
+				<div style="font-size:120%;color:red;font-style:italic;padding-bottom:1%">
+				{{ form.username.errors }}
+				</div>
+				<div class="row field">
+					<div class="col-xs-5">
+						<label for="user">Username <span style="color:red">*</span></label>
+					</div>
+					<div class="col-xs-6">
+						<input type="text" id="user" name="username" value="{{username}}" style="width:110%" required></input><br>
+					</div>
+				</div>
+				{% if err2 %}
+				<div style="font-size:120%;color:red;font-style:italic;padding-bottom:1%">
+				*{{ err2 }}
+				</div>
+				{% endif %}
+              	<div class="row field">
+					<div class="col-xs-5">
+						<label for="bl">Balance <span style="color:red">*</span></label>
+					</div>
+					<div class="col-xs-6">
+						<input type="number" name="balance" id="bl"  value="{{balance}}" style="width:110%" required></input><br>
+					</div>
+				</div>
+
+				<div style="font-size:120%;color:red;font-style:italic;padding-bottom:1%">
+				{{ form.password.errors }}
+				</div>
+				<div class="row field">
+					<div class="col-xs-5">
+						<label for="pass">Password <span style="color:red">*</span></label>
+					</div>
+					<div class="col-xs-6">
+						<input type="password" id="pass" name="password"  style="width:110%" required></input><br>
+					</div>
+				</div>
+				<div class="but">
+					<button type="submit" class="button">REGISTER</button>
+				</div>
+			</form>
+			<br>
+			<div id="sign">
+				Already a member?<a href="{% url 'login' %}">Login</a>
+			</div>
+		</div>
+{% endblock %}
