@@ -17,11 +17,11 @@ from django.contrib import admin
 from django.urls import include,path
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
-
+from accounts import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    path('balance/', TemplateView.as_view(template_name='profile.html'), name='balance'),
+    path('balance/', views.update_profile, name='balance'),
 ]

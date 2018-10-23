@@ -11,10 +11,11 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password','balance']
+        fields = ('username', 'password','balance')
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = 'balance'
+        fields = ('balance',)
 

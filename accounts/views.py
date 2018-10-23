@@ -21,14 +21,18 @@ def update_profile(request):
     if request.method == 'POST':
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
         if profile_form.is_valid():
+            instance = request.user.profile
+            bal = int(request.POST.get('balance',''))
             profile_form.save()
-            messages.success(request, _('Your profile was successfully updated!'))
+            request.user.profile.balance = bal
+            request.user.save()
+            # messages.success(request, _('Your profile was successfully updated!'))
             return redirect('home')
         else:
             messages.error(request, _('Please correct the error below.'))
     else:
         profile_form = ProfileForm(instance=request.user.profile)
-    return render(request, 'profiles/profile.html', {
+    return render(request, 'profile.html', {
         'profile_form': profile_form
     })
 
@@ -53,7 +57,10 @@ class UserFormView(View):
             #clean the data
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            balance = form.cleaned_data['balance']
             user.set_password(password)
+            user.username = username
+            user.balance = balance
             user.save()
 
             # returns user object if credentials are correct
@@ -64,4 +71,5 @@ class UserFormView(View):
                 return HttpResponse("your balance is {% ")
 
         return render(self, self.template_name, {'form': form})
+
 
