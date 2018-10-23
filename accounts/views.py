@@ -1,6 +1,8 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.core.checks import messages
+from django.contrib.auth.models import User
+#from django.core.checks import messages
 from django.db import transaction
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, request
@@ -26,16 +28,37 @@ def update_profile(request):
             profile_form.save()
             request.user.profile.balance = bal
             request.user.save()
-            # messages.success(request, _('Your profile was successfully updated!'))
+            messages.success(request, _('Your profile was successfully updated!'))
             return redirect('home')
         else:
-            messages.error(request, _('Please correct the error below.'))
+            messages.error(request, ('Please correct the error below.'))
     else:
         profile_form = ProfileForm(instance=request.user.profile)
     return render(request, 'profile.html', {
         'profile_form': profile_form
     })
 
+
+def create_user(request):
+    if request.method == 'POST':
+        user_form = UserForm(request.POST)
+        profile_form = ProfileForm(request.POST)
+        if user_form.is_valid() and profile_form.is_valid():
+            obj, created = User.objects.get_or_create(username=request.POST.get('username'))
+            if created:
+                obj.set_password(request.POST.get('password'))
+                obj.profile.balance = int(request.POST.get('balance',''))
+                obj.save()
+            messages.success(request, ('Your profile was successfully updated!'))
+            return redirect('home')
+        else:
+            messages.error(request, ('Please correct the error below.'))
+    else:
+        user_form = UserForm
+        profile_form = ProfileForm
+        return render(request, 'create.html', {
+        'user_form': user_form,
+        'profile_form': profile_form })
 
 
 class UserFormView(View):
