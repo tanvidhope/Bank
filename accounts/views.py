@@ -28,7 +28,7 @@ def update_profile(request):
             profile_form.save()
             request.user.profile.balance = bal
             request.user.save()
-            messages.success(request, _('Your profile was successfully updated!'))
+            messages.success(request, ('Your profile was successfully updated!'))
             return redirect('home')
         else:
             messages.error(request, ('Please correct the error below.'))
