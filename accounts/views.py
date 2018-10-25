@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, request
 from django.views.generic.base import View
 
-from .forms import UserForm, ProfileForm
+from .forms import UserForm, ProfileForm, TransactionForm
 
 
 # Create your views here.
@@ -59,6 +59,34 @@ def create_user(request):
         return render(request, 'create.html', {
         'user_form': user_form,
         'profile_form': profile_form })
+
+
+def make_transaction(request):
+    if request.method == 'POST':
+        transaction_form = TransactionForm(request.POST, instance=request.user.profile)
+        if transaction_form.is_valid():
+            # reciever = request.POST.get('reciever')
+            if User.objects.filter(username=request.POST.get('receiver')).exists():
+                amount = int(request.POST.get('amount'))
+                if amount < request.user.profile.balance :
+                    sender = request.user
+                    request.user.profile.balance = request.user.profile.balance - amount
+                    reciever = User.objects.get(username=request.POST.get('receiver'))
+                    reciever.profile.balance = reciever.profile.balance + amount
+                    sender.save()
+                    reciever.save()
+                    return redirect('home')
+                else:
+                    messages.error(request, ('Balance insufficient!'))
+                    return redirect('transaction')
+            else:
+                messages.error(request, ('user does not exist'))
+                return redirect('transaction')
+    else:
+        transaction_form = TransactionForm
+        return render(request,'transactionForm.html',{
+            'transaction_form' : transaction_form
+        })
 
 
 class UserFormView(View):

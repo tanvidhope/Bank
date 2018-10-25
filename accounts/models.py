@@ -14,7 +14,7 @@ class Profile(models.Model):
 
     # def __str__(self):
       # profile = self.balance
-       #return profile
+      #  return "%s" % (self.user.username)
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
@@ -28,5 +28,5 @@ class Profile(models.Model):
 
 class Transaction(models.Model):
     sender = models.ForeignKey(Profile, related_name='sent_money', on_delete=models.CASCADE)
-    receiver = models.ForeignKey(Profile, related_name='received_money', on_delete=models.CASCADE)
-    amount = models.IntegerField()
+    receiver = models.CharField(default=0, max_length=250)
+    amount = models.IntegerField(default=0)

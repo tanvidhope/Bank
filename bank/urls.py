@@ -25,4 +25,5 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('balance/', views.update_profile, name='balance'),
     path('create/', views.create_user, name='create'),
+    path('transaction/', views.make_transaction, name='transaction'),
 ]

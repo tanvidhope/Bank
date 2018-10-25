@@ -8,8 +8,10 @@
 Your balance is : {{ user.profile.balance }}
 <p><a href="{% url 'logout' %}">logout</a></p>
 <p><a href="{% url 'balance' %}">update balance</a></p>
+<p><a href="{% url 'transaction' %}">Transaction</a></p>
 {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">login</a>
+  <p><a href="{% url 'create' %}">Create User</a></p>
 {% endif %}
 {% endblock %}
