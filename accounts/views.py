@@ -8,6 +8,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, request
 from django.views.generic.base import View
 
+from django.core.mail import send_mail
+from django.conf import settings
+
+
 from .forms import UserForm, ProfileForm, TransactionForm
 
 
@@ -47,12 +51,17 @@ def create_user(request):
             obj, created = User.objects.get_or_create(username=request.POST.get('username'))
             if created:
                 obj.set_password(request.POST.get('password'))
+                obj.email = request.POST.get('email')
                 obj.profile.balance = int(request.POST.get('balance',''))
                 obj.save()
-            messages.success(request, ('Your profile was successfully updated!'))
-            return redirect('home')
+                messages.success(request, ('Your profile was successfully updated!'))
+                return redirect('home')
+            else:
+                messages.error(request, ('user already exists!'))
+                return redirect('create')
         else:
             messages.error(request, ('Please correct the error below.'))
+            return redirect('create')
     else:
         user_form = UserForm
         profile_form = ProfileForm
@@ -75,6 +84,8 @@ def make_transaction(request):
                     reciever.profile.balance = reciever.profile.balance + amount
                     sender.save()
                     reciever.save()
+                    email_sender(amount,reciever)
+                    email_reciever(amount,sender)
                     return redirect('home')
                 else:
                     messages.error(request, ('Balance insufficient!'))
@@ -88,6 +99,23 @@ def make_transaction(request):
             'transaction_form' : transaction_form
         })
 
+
+def email_sender(amt, reciever):
+    subject1 = ' The money has been successfully transferred'
+    message1 = ' An amount of rs ' + str(amt) +' has been sent to ' + reciever.username + '.'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [reciever.email,]
+    send_mail( subject1, message1, email_from, recipient_list )
+    return redirect('home.html')
+
+
+def email_reciever(amt, sender):
+    subject = ' You have recieved money!'
+    message = ' An amount of rs ' + str(amt) + ' from ' + sender.username + 'has been credited to your account.'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['sender.email',]
+    send_mail( subject, message, email_from, recipient_list )
+    return redirect('home.html')
 
 class UserFormView(View):
     form_class = UserForm
